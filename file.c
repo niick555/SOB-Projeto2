@@ -7,9 +7,11 @@
  */
 
 #include "minix.h"
+#include <linux/fs.h>
+#include <linux/uio.h>
 
-static ssize_t teste(struct kiocb *iocb, struct iov_iter *from);
-static ssize_t teste2(struct kiocb *iocb, struct iov_iter *iter);
+static ssize_t read_file(struct kiocb *iocb, struct iov_iter *from);
+static ssize_t write_file(struct kiocb *iocb, struct iov_iter *iter);
 
 /*
  * We have mostly NULLs here: the current defaults are OK for
@@ -17,31 +19,31 @@ static ssize_t teste2(struct kiocb *iocb, struct iov_iter *iter);
  */
 const struct file_operations minix_file_operations = {
 	.llseek		= generic_file_llseek,
-	.read_iter	= teste2,
-	.write_iter	= teste,
+	.read_iter	= read_file,
+	.write_iter	= write_file,
 	.mmap		= generic_file_mmap,
 	.fsync		= generic_file_fsync,
 	.splice_read	= generic_file_splice_read,
 };
 
-static ssize_t teste(struct kiocb *iocb, struct iov_iter *from)
-{
-	ssize_t ret;
-
-	ret = generic_file_write_iter(iocb, from);
-
-	printk("minix: teste_write %i\n", ret);
-
-	return ret;
-}
-
-static ssize_t teste2(struct kiocb *iocb, struct iov_iter *iter)
+static ssize_t read_file(struct kiocb *iocb, struct iov_iter *iter)
 {
 	ssize_t ret;
 
 	ret = generic_file_read_iter(iocb, iter);
 
-	printk("minix: teste_read %i\n", ret);
+	printk("minix: teste_read: %i\n", ret);
+	return ret;
+}
+
+static ssize_t write_file(struct kiocb *iocb, struct iov_iter *from)
+{
+	ssize_t ret;
+	char *ptr = (char *)from->kvec->iov_base;
+
+	ret = generic_file_write_iter(iocb, from);
+
+	printk("minix: teste_write %s: \n", ptr);
 
 	return ret;
 }

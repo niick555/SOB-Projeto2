@@ -6,7 +6,6 @@ obj-$(CONFIG_MINIX_FS) += minix_module.o
 
 minix_module-objs := bitmap.o itree_v1.o itree_v2.o namei.o inode.o file.o dir.o
 
-KVERSION = $(shell name -r)
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) modules
 
