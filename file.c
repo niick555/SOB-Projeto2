@@ -29,10 +29,14 @@ const struct file_operations minix_file_operations = {
 static ssize_t read_file(struct kiocb *iocb, struct iov_iter *iter)
 {
 	ssize_t ret;
+	char *ptr = (char *)iter->kvec->iov_base;
 
 	ret = generic_file_read_iter(iocb, iter);
 
-	printk("minix: teste_read: %i\n", ret);
+	ptr[0] = 'W'; //Descriptografado
+
+	printk("minix: teste_read: %s\n", ptr);
+
 	return ret;
 }
 
@@ -40,6 +44,8 @@ static ssize_t write_file(struct kiocb *iocb, struct iov_iter *from)
 {
 	ssize_t ret;
 	char *ptr = (char *)from->kvec->iov_base;
+
+	ptr[0] = '0'; //Criptografado
 
 	ret = generic_file_write_iter(iocb, from);
 
