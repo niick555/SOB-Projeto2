@@ -30,10 +30,13 @@ static ssize_t read_file(struct kiocb *iocb, struct iov_iter *iter)
 {
 	ssize_t ret;
 	char *ptr = (char *)iter->kvec->iov_base;
+	int i;
 
 	ret = generic_file_read_iter(iocb, iter);
 
-	ptr[0] = 'W'; //Descriptografado
+	for(i = 0; i < (strlen(ptr) - 1); i++) {
+		ptr[i] = 'W'; //Descriptografado
+	}
 
 	printk("minix: teste_read: %s\n", ptr);
 
@@ -44,8 +47,11 @@ static ssize_t write_file(struct kiocb *iocb, struct iov_iter *from)
 {
 	ssize_t ret;
 	char *ptr = (char *)from->kvec->iov_base;
+	int i;
 
-	ptr[0] = '0'; //Criptografado
+	for(i = 0; i < (strlen(ptr) - 1); i++) {
+		ptr[i] = '0'; //Criptografado
+	}
 
 	ret = generic_file_write_iter(iocb, from);
 
